@@ -1,0 +1,76 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Beige Background */
+    --background: 250 249 246; 
+    /* Black Text */
+    --foreground: 20 20 20; 
+    
+    --card: 255 255 255;
+    --card-foreground: 20 20 20;
+    
+    /* Baby Pink */
+    --border: 255 182 193; 
+    
+    /* Baby Pink */
+    --accent: 255 182 193; 
+    --accent-foreground: 20 20 20;
+    
+    /* Slightly darker beige for muted areas */
+    --muted: 240 235 225;
+    --muted-foreground: 120 110 110;
+    
+    --ring: 255 182 193;
+    --radius: 1rem;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 98%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+    /* Soft ambient gradients for the light glassmorphism */
+    background: radial-gradient(circle at 10% 20%, rgba(255, 255, 255, 0.8), transparent 40%),
+                radial-gradient(circle at 90% 80%, rgba(255, 182, 193, 0.15), transparent 40%),
+                #FAF9F6;
+    background-attachment: fixed;
+  }
+}
+
+@layer components {
+  /* Make cards frosted glass */
+  .bg-card {
+    background: rgba(255, 255, 255, 0.4) !important;
+    backdrop-filter: blur(24px) !important;
+    -webkit-backdrop-filter: blur(24px) !important;
+    border: 1px solid rgba(255, 182, 193, 0.3) !important;
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.05) !important;
+  }
+
+  /* Soft pink borders */
+  .border-border {
+    border-color: rgba(255, 182, 193, 0.3) !important;
+  }
+}
+
+.glass {
+  background: rgba(255, 255, 255, 0.4);
+  backdrop-filter: blur(24px);
+  border: 1px solid rgba(255, 182, 193, 0.3);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.05);
+}
+
+.scrollbar-hide::-webkit-scrollbar { 
+  display: none; 
+} 
+.scrollbar-hide { 
+  -ms-overflow-style: none; 
+  scrollbar-width: none; 
+}
