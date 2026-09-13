@@ -12,6 +12,7 @@ interface ParticipantPanelProps {
   currentUserIsHost: boolean;
   localStream: MediaStream | null;
   remoteStreams: RemoteStream[];
+  remoteMediaStates: Record<string, { isMicOn: boolean; isCameraOn: boolean }>;
   isMicOn: boolean;
   isCameraOn: boolean;
   isScreenSharing: boolean;
@@ -20,8 +21,8 @@ interface ParticipantPanelProps {
   onToggleCamera: () => void;
   onToggleScreenShare: () => void;
   onEnableCall: () => void;
-  onKick: (userId: string) => void;
-  onPin: (userId: string) => void;
+  onKick: (targetId: string) => void;
+  onPin: (targetId: string) => void;
   webRTCError: string | null;
 }
 
@@ -31,6 +32,7 @@ export default function ParticipantPanel({
   currentUserIsHost,
   localStream,
   remoteStreams,
+  remoteMediaStates,
   isMicOn,
   isCameraOn,
   isScreenSharing,
@@ -43,15 +45,20 @@ export default function ParticipantPanel({
   onPin,
   webRTCError,
 }: ParticipantPanelProps) {
-  const getStreamForParticipant = (participantId: string): MediaStream | null => {
-    if (participantId === currentUserId) return localStream;
-    return remoteStreams.find((r) => r.userId === participantId)?.stream ?? null;
+  const getStreamForParticipant = (id: string) => {
+    if (id === currentUserId) return localStream || undefined;
+    return remoteStreams.find((s) => s.userId === id)?.stream;
   };
 
   const getParticipantWithLiveState = (p: typeof participants[0]) => {
     if (p.id === currentUserId) {
       return { ...p, isMicOn, isCameraOn };
     }
+    const remoteState = remoteMediaStates[p.id];
+    if (remoteState) {
+      return { ...p, isMicOn: remoteState.isMicOn, isCameraOn: remoteState.isCameraOn };
+    }
+    // Assume off until we hear otherwise
     return p;
   };
 

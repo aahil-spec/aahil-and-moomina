@@ -113,6 +113,15 @@ export default function RoomPage({ params }: { params: Promise<{ roomId: string 
 
   const { toast } = useToast();
 
+  const [remoteMediaStates, setRemoteMediaStates] = useState<Record<string, { isMicOn: boolean; isCameraOn: boolean }>>({});
+
+  const handleMediaState = useCallback((remoteUserId: string, micOn: boolean, camOn: boolean) => {
+    setRemoteMediaStates(prev => ({
+      ...prev,
+      [remoteUserId]: { isMicOn: micOn, isCameraOn: camOn }
+    }));
+  }, []);
+
   const handlePlay = useCallback((currentTime: number, triggerUserId: string) => {
     videoRef.current?.seek(currentTime);
     videoRef.current?.play();
@@ -161,14 +170,21 @@ export default function RoomPage({ params }: { params: Promise<{ roomId: string 
     reactionOverlayRef.current?.addReaction(emoji);
   }, []);
 
-  const { isConnected: isSyncConnected, socket, emitPlay, emitPause, emitSeek, emitKick, emitReaction } = useSync({
+  const { isConnected: isSyncConnected, socket, emitPlay, emitPause, emitSeek, emitKick, emitReaction, emitMediaState } = useSync({
     roomId,
     userId,
     onPlay: handlePlay,
     onPause: handlePause,
     onSeek: handleSeek,
     onReaction: handleReaction,
+    onMediaState: handleMediaState,
   });
+
+  useEffect(() => {
+    if (isSyncConnected) {
+      emitMediaState(isMicOn, isCameraOn);
+    }
+  }, [isMicOn, isCameraOn, isSyncConnected, emitMediaState]);
 
   const handleKick = useCallback(async (targetId: string) => {
     // 1. Optimistically hide them
@@ -355,6 +371,7 @@ export default function RoomPage({ params }: { params: Promise<{ roomId: string 
               currentUserIsHost={isHost}
               localStream={localStream}
               remoteStreams={remoteStreams}
+              remoteMediaStates={remoteMediaStates}
               isMicOn={isMicOn}
               isCameraOn={isCameraOn}
               isScreenSharing={isScreenSharing}

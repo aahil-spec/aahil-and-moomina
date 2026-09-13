@@ -8,9 +8,10 @@ interface UseSyncOptions {
   onPause: (currentTime: number, triggerUserId: string) => void;
   onSeek: (currentTime: number, triggerUserId: string) => void;
   onReaction?: (emoji: string, userId: string) => void;
+  onMediaState?: (userId: string, isMicOn: boolean, isCameraOn: boolean) => void;
 }
 
-export function useSync({ roomId, userId, onPlay, onPause, onSeek, onReaction }: UseSyncOptions) {
+export function useSync({ roomId, userId, onPlay, onPause, onSeek, onReaction, onMediaState }: UseSyncOptions) {
   const [isConnected, setIsConnected] = useState(false);
   const [socket, setSocket] = useState<Socket | null>(null);
 
@@ -71,6 +72,11 @@ export function useSync({ roomId, userId, onPlay, onPause, onSeek, onReaction }:
       onReaction?.(payload.emoji, payload.userId);
     });
 
+    socketInstance.on("media-state", (payload: { userId: string; isMicOn: boolean; isCameraOn: boolean }) => {
+      if (payload.userId === userId) return;
+      onMediaState?.(payload.userId, payload.isMicOn, payload.isCameraOn);
+    });
+
     return () => {
       socketInstance.emit("leave-room", roomId);
       socketInstance.disconnect();
@@ -114,5 +120,12 @@ export function useSync({ roomId, userId, onPlay, onPause, onSeek, onReaction }:
     [socket, roomId, userId, onReaction]
   );
 
-  return { isConnected, socket, emitPlay, emitPause, emitSeek, emitKick, emitReaction };
+  const emitMediaState = useCallback(
+    (isMicOn: boolean, isCameraOn: boolean) => {
+      socket?.emit("media-state", { roomId, userId, isMicOn, isCameraOn });
+    },
+    [socket, roomId, userId]
+  );
+
+  return { isConnected, socket, emitPlay, emitPause, emitSeek, emitKick, emitReaction, emitMediaState };
 }

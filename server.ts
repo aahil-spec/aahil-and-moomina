@@ -108,6 +108,10 @@ app.prepare().then(() => {
       io.to(roomId).emit("reaction", { emoji, userId });
     });
 
+    socket.on("media-state", ({ roomId, userId, isMicOn, isCameraOn }: { roomId: string; userId: string; isMicOn: boolean; isCameraOn: boolean }) => {
+      io.to(roomId).emit("media-state", { userId, isMicOn, isCameraOn });
+    });
+
     socket.on("disconnect", () => {
       console.log("[socket.io] disconnected:", socket.id);
       // Clean up userId -> socketId mapping
