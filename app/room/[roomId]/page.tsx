@@ -281,7 +281,7 @@ export default function RoomPage({ params }: { params: Promise<{ roomId: string 
       {/* Main content */}
       <div className="flex-1 flex flex-col md:flex-row overflow-hidden min-h-0">
         {/* Video area */}
-        <div className="flex-1 bg-black/95 flex flex-col min-h-0 min-w-0 relative group">
+        <div className="w-full flex-shrink-0 md:flex-1 aspect-video md:aspect-auto bg-black/95 flex flex-col min-h-0 min-w-0 relative group">
           <ReactionOverlay ref={reactionOverlayRef} />
           {(() => {
             const focusedStream = focusedParticipantId 
@@ -331,7 +331,7 @@ export default function RoomPage({ params }: { params: Promise<{ roomId: string 
         </div>
 
         {/* Right sidebar */}
-        <div className="w-full md:w-[360px] lg:w-[400px] bg-card border-t md:border-t-0 md:border-l border-border flex flex-col flex-shrink-0 min-h-0 max-h-[50vh] md:max-h-none">
+        <div className="w-full md:w-[360px] lg:w-[400px] bg-card border-t md:border-t-0 md:border-l border-border flex flex-col flex-1 min-h-0 md:flex-shrink-0">
           {/* Participants + call controls */}
           <div className="border-b border-border flex-shrink-0">
             <div className="px-4 py-2 flex items-center justify-between">
