@@ -110,12 +110,15 @@ app.prepare().then(() => {
 
     socket.on("disconnect", () => {
       console.log("[socket.io] disconnected:", socket.id);
-      // Clean up userId → socketId mapping
-      for (const [userId, socketId] of userSocketMap.entries()) {
+      // Clean up userId -> socketId mapping
+      let userIdToRemove: string | null = null;
+      userSocketMap.forEach((socketId, userId) => {
         if (socketId === socket.id) {
-          userSocketMap.delete(userId);
-          break;
+          userIdToRemove = userId;
         }
+      });
+      if (userIdToRemove) {
+        userSocketMap.delete(userIdToRemove);
       }
     });
   });
